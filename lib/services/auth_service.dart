@@ -78,24 +78,37 @@ class AuthService {
     try {
       // Web Implementation: Use Firebase Auth native popup
       if (kIsWeb) {
+        debugPrint('AuthService: Starting Web Sign-In Popup');
         final GoogleAuthProvider authProvider = GoogleAuthProvider();
         final UserCredential userCredential =
             await _auth.signInWithPopup(authProvider);
+        debugPrint('AuthService: Web Sign-In Popup Success');
         return userCredential.user;
       }
 
       // Mobile Implementation: Trigger the Google Sign-In flow (identity + idToken)
-      final GoogleSignInAccount googleUser =
+      debugPrint('AuthService: Starting Mobile Identity Authentication');
+      final GoogleSignInAccount? googleUser =
           await _googleSignIn.authenticate();
+      
+      if (googleUser == null) {
+        debugPrint('AuthService: Mobile Identity Authentication Cancelled (null user)');
+        return null;
+      }
+      debugPrint('AuthService: Mobile Identity Authentication Success');
 
       // Step 2: Get the idToken from authentication
+      debugPrint('AuthService: Fetching Tokens');
       final GoogleSignInAuthentication googleAuth =
-          googleUser.authentication;
+          await googleUser.authentication;
+      debugPrint('AuthService: Tokens Fetched');
 
       // Step 3: Get the accessToken via authorizationClient
+      debugPrint('AuthService: Requesting Authorization Scopes');
       final GoogleSignInClientAuthorization authClient =
           await googleUser.authorizationClient
               .authorizeScopes(<String>['email', 'profile']);
+      debugPrint('AuthService: Authorization Scopes Granted');
 
       // Step 4: Create Firebase credential from Google tokens
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -104,16 +117,21 @@ class AuthService {
       );
 
       // Step 5: Sign in to Firebase with the Google credential
+      debugPrint('AuthService: Signing in to Firebase');
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
+      debugPrint('AuthService: Firebase Sign-In Success');
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
+      debugPrint('AuthService: FirebaseAuthException: ${e.code}');
       throw Exception('Google sign-in failed: ${e.code} — ${e.message}');
     } on GoogleSignInException catch (e) {
+      debugPrint('AuthService: GoogleSignInException: ${e.code}');
       // Return null if the user canceled the sign-in
       if (e.code == GoogleSignInExceptionCode.canceled) return null;
       throw Exception('Google sign-in failed: ${e.code}');
     } catch (e) {
+      debugPrint('AuthService: Generic Error: $e');
       throw Exception('Google sign-in error: $e');
     }
   }

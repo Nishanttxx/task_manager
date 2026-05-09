@@ -36,10 +36,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleGoogleSignIn() async {
+    debugPrint('Google Sign-In started');
     setState(() => _isSigningIn = true);
     try {
-      await AuthService().signInWithGoogle();
+      await AuthService()
+          .signInWithGoogle()
+          .timeout(const Duration(seconds: 20), onTimeout: () {
+        debugPrint('Google Sign-In timed out');
+        throw 'Connection timeout. Please try again.';
+      });
+      debugPrint('Google Sign-In process finished');
     } catch (e) {
+      debugPrint('Google Sign-In error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -47,6 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: const Color(0xFFEF4444),
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        debugPrint('Resetting loading state');
         setState(() => _isSigningIn = false);
       }
     }
@@ -79,6 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: const Color(0xFFEF4444),
           ),
         );
+      }
+    } finally {
+      if (mounted) {
         setState(() => _isSigningIn = false);
       }
     }
@@ -96,6 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: const Color(0xFFEF4444),
           ),
         );
+      }
+    } finally {
+      if (mounted) {
         setState(() => _isSigningIn = false);
       }
     }
