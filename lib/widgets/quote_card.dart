@@ -99,14 +99,41 @@ class _QuoteCardState extends State<QuoteCard> {
                   ),
                 )
               else if (snapshot.hasError)
-                Text(
-                  '"The only way to do great work is to love what you do."',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    height: 1.5,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '"The only way to do great work is to love what you do."',
+                      style: TextStyle(
+                        color: Colors.white.withAlpha(180),
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        '— Steve Jobs',
+                        style: TextStyle(
+                          color: Colors.white.withAlpha(140),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Failed to load quote (${snapshot.error})',
+                      style: TextStyle(
+                        color: Colors.white.withAlpha(100),
+                        fontSize: 11,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 )
               else if (snapshot.hasData) ...[
                 Text(
