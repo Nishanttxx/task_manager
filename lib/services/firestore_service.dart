@@ -42,6 +42,9 @@ class FirestoreService {
   // UPDATE — Edit an existing task
   // ──────────────────────────────────────────────
   Future<void> updateTask(String uid, TaskModel task) async {
+    if (task.id.isEmpty) {
+      throw Exception('Cannot update task with empty ID');
+    }
     await _tasksRef(uid).doc(task.id).update(task.toMap());
   }
 
@@ -56,6 +59,9 @@ class FirestoreService {
   // TOGGLE — Toggle completed status
   // ──────────────────────────────────────────────
   Future<void> toggleCompleted(String uid, TaskModel task) async {
+    if (task.id.isEmpty) {
+      throw Exception('Cannot toggle task with empty ID');
+    }
     await _tasksRef(uid).doc(task.id).update({
       'completed': !task.completed,
     });
