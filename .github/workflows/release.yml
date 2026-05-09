@@ -27,6 +27,7 @@ jobs:
         run: |
           printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
           printf '%s' "${{ secrets.KEY_PROPERTIES }}" > android/key.properties
+          printf '%s' "${{ secrets.FIREBASE_OPTIONS_BASE64 }}" | base64 -d > lib/firebase_options.dart
 
       - name: Install dependencies
         run: flutter pub get
