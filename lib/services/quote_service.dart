@@ -20,7 +20,7 @@ class QuoteService {
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body) as Map<String, dynamic>;
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
         return QuoteModel.fromJson(data);
       } else {
         throw Exception(
