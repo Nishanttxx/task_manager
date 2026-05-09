@@ -54,6 +54,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   Future<void> _pickDate() async {
+    if (!mounted) return;
+
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
@@ -77,12 +79,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         );
       },
     );
+
+    if (!mounted) return;
+
     if (picked != null) {
       setState(() => _selectedDate = picked);
     }
   }
 
   Future<void> _saveTask() async {
+    if (!mounted) return;
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSaving = true);
@@ -116,9 +123,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             backgroundColor: Colors.redAccent,
           ),
         );
+        setState(() => _isSaving = false);
       }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
     }
   }
 
