@@ -11,7 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 /// can be added later by extending this service.
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   /// Returns the currently signed-in user, or null.
   User? get currentUser => _auth.currentUser;
@@ -38,12 +38,15 @@ class AuthService {
   /// Signs in with Google.
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null; // The user canceled the sign-in
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      
+      // Get the access token using authorizationClient
+      final authClient = await googleUser.authorizationClient.authorizeScopes(['email', 'profile']);
+      
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
+        accessToken: authClient.accessToken,
         idToken: googleAuth.idToken,
       );
 
@@ -51,6 +54,10 @@ class AuthService {
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       throw Exception('Google sign-in failed: ${e.code} — ${e.message}');
+    } on GoogleSignInException catch (e) {
+      // Return null if the user canceled the sign-in
+      if (e.code == GoogleSignInExceptionCode.canceled) return null;
+      throw Exception('Google sign-in failed: ${e.code}');
     } catch (e) {
       throw Exception('Google sign-in error: $e');
     }
