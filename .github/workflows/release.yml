@@ -25,8 +25,8 @@ jobs:
 
       - name: Decode Secrets
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
-          echo "${{ secrets.KEY_PROPERTIES }}" > android/key.properties
+          printf '%s' "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          printf '%s' "${{ secrets.KEY_PROPERTIES }}" > android/key.properties
 
       - name: Install dependencies
         run: flutter pub get
