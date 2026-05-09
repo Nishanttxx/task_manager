@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -35,22 +36,76 @@ class AuthService {
     }
   }
 
-  /// Signs in with Google.
+  /// Signs in with email and password.
+  Future<User?> signInWithEmail(String email, String password) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return credential.user;
+    } on FirebaseAuthException catch (e) {
+      throw Exception('Login failed: ${e.message}');
+    }
+  }
+
+  /// Registers a new user with email and password.
+  Future<User?> signUpWithEmail(
+      String email, String password, String name) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      // Update display name if provided
+      if (name.isNotEmpty) {
+        await credential.user?.updateDisplayName(name);
+      }
+      return credential.user;
+    } on FirebaseAuthException catch (e) {
+      throw Exception('Registration failed: ${e.message}');
+    }
+  }
+
+  /// Signs in with Google using the v7 google_sign_in API.
+  ///
+  /// In v7, authentication and authorization are separate concerns:
+  ///   - authenticate() → identity + idToken
+  ///   - authorizationClient.authorizeScopes() → accessToken
+  ///
+  /// Firebase needs both idToken and accessToken to create a credential.
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+      // Web Implementation: Use Firebase Auth native popup
+      if (kIsWeb) {
+        final GoogleAuthProvider authProvider = GoogleAuthProvider();
+        final UserCredential userCredential =
+            await _auth.signInWithPopup(authProvider);
+        return userCredential.user;
+      }
 
-      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
-      
-      // Get the access token using authorizationClient
-      final authClient = await googleUser.authorizationClient.authorizeScopes(['email', 'profile']);
-      
+      // Mobile Implementation: Trigger the Google Sign-In flow (identity + idToken)
+      final GoogleSignInAccount googleUser =
+          await _googleSignIn.authenticate();
+
+      // Step 2: Get the idToken from authentication
+      final GoogleSignInAuthentication googleAuth =
+          googleUser.authentication;
+
+      // Step 3: Get the accessToken via authorizationClient
+      final GoogleSignInClientAuthorization authClient =
+          await googleUser.authorizationClient
+              .authorizeScopes(<String>['email', 'profile']);
+
+      // Step 4: Create Firebase credential from Google tokens
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: authClient.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      // Step 5: Sign in to Firebase with the Google credential
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       throw Exception('Google sign-in failed: ${e.code} — ${e.message}');
@@ -63,9 +118,22 @@ class AuthService {
     }
   }
 
+  /// Checks if a link is a valid Firebase sign-in email link.
+  bool isSignInWithEmailLink(String emailLink) {
+    return _auth.isSignInWithEmailLink(emailLink);
+  }
+
   /// Signs out the current user.
+  ///
+  /// Google sign-out is wrapped in try-catch because it will fail
+  /// if the user signed in anonymously (no Google session to clear).
+  /// Firebase sign-out must always run regardless.
   Future<void> signOut() async {
-    await _googleSignIn.signOut();
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {
+      // Ignore — user may not have a Google session (e.g. anonymous login)
+    }
     await _auth.signOut();
   }
 }

@@ -1,21 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../models/task_model.dart';
 import '../services/firestore_service.dart';
 
-/// Screen for adding a new task or editing an existing one (Step 8).
-///
-/// In **add mode**: [existingTask] is null → creates a new task.
-/// In **edit mode**: [existingTask] is provided → pre-fills form fields.
-///
-/// Contains:
-///   - Title field (validated — required)
-///   - Description field (maxLines: 3)
-///   - Date picker with calendar icon
-///   - Save Task button
-///
-/// On save: calls addTask() or updateTask() → Navigator.pop() → HomeScreen.
 class AddTaskScreen extends StatefulWidget {
   final TaskModel? existingTask;
 
@@ -34,15 +23,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   late DateTime _selectedDate;
   bool _isSaving = false;
 
+  static const Color ink = Color(0xFF0F0E0D);
+  static const Color cream = Color(0xFFF7F4EF);
+  static const Color cream2 = Color(0xFFEDE9E2);
+  static const Color accent = Color(0xFFD9440F);
+
   bool get _isEditing => widget.existingTask != null;
 
   @override
   void initState() {
     super.initState();
-    _titleController =
-        TextEditingController(text: widget.existingTask?.title ?? '');
-    _descriptionController =
-        TextEditingController(text: widget.existingTask?.description ?? '');
+    _titleController = TextEditingController(text: widget.existingTask?.title ?? '');
+    _descriptionController = TextEditingController(text: widget.existingTask?.description ?? '');
     _selectedDate = widget.existingTask?.date ?? DateTime.now();
   }
 
@@ -64,15 +56,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF6C63FF),
-              surface: Color(0xFF1A1A2E),
-              onSurface: Colors.white,
-            ),
-            dialogTheme: DialogThemeData(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+            colorScheme: const ColorScheme.light(
+              primary: accent,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: ink,
             ),
           ),
           child: child!,
@@ -91,14 +79,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (!mounted) return;
 
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isSaving = true);
-
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception('Not authenticated');
-      }
+      if (user == null) throw Exception('Not authenticated');
 
       final task = TaskModel(
         id: _isEditing ? widget.existingTask!.id : '',
@@ -113,15 +97,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       } else {
         await _firestoreService.addTask(user.uid, task);
       }
-
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.redAccent,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent),
         );
         setState(() => _isSaving = false);
       }
@@ -131,137 +111,83 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F23),
+      backgroundColor: cream,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F0F23),
+        backgroundColor: cream,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          icon: const Icon(Icons.close_rounded, color: ink),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           _isEditing ? 'Edit Task' : 'New Task',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.syne(fontWeight: FontWeight.w700, color: ink),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Title Field ──
-              _buildLabel('Title'),
+              _buildLabel('TITLE'),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _titleController,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-                decoration: _inputDecoration(
-                  hint: 'What needs to be done?',
-                  icon: Icons.title_rounded,
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Title is required';
-                  }
-                  return null;
-                },
+                style: GoogleFonts.dmSans(color: ink, fontSize: 16),
+                decoration: _inputDecoration(hint: 'What needs to be done?'),
+                validator: (val) => (val == null || val.isEmpty) ? 'Title is required' : null,
               ),
-
               const SizedBox(height: 24),
-
-              // ── Description Field ──
-              _buildLabel('Description'),
+              _buildLabel('DESCRIPTION'),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _descriptionController,
-                maxLines: 3,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-                decoration: _inputDecoration(
-                  hint: 'Add some details…',
-                  icon: Icons.description_rounded,
-                ),
+                maxLines: 4,
+                style: GoogleFonts.dmSans(color: ink, fontSize: 16),
+                decoration: _inputDecoration(hint: 'Add some details…'),
               ),
-
               const SizedBox(height: 24),
-
-              // ── Date Picker ──
-              _buildLabel('Due Date'),
+              _buildLabel('DUE DATE'),
               const SizedBox(height: 8),
               InkWell(
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A2E),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF2D2D44)),
+                    border: Border.all(color: cream2),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.calendar_today_rounded,
-                        color: Color(0xFF818CF8),
-                        size: 20,
-                      ),
+                      const Icon(Icons.calendar_today_rounded, color: accent, size: 20),
                       const SizedBox(width: 12),
                       Text(
                         DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+                        style: GoogleFonts.dmSans(color: ink, fontSize: 16),
                       ),
                       const Spacer(),
-                      const Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color: Colors.white38,
-                      ),
+                      const Icon(Icons.expand_more_rounded, color: Colors.black26),
                     ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 40),
-
-              // ── Save Button ──
+              const SizedBox(height: 48),
               SizedBox(
-                height: 54,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveTask,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C63FF),
-                    disabledBackgroundColor:
-                        const Color(0xFF6C63FF).withAlpha(100),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    elevation: 2,
+                    backgroundColor: ink,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                   ),
                   child: _isSaving
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          _isEditing ? 'Update Task' : 'Save Task',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : Text(_isEditing ? 'Update Task' : 'Create Task', style: GoogleFonts.dmSans(fontWeight: FontWeight.w600, fontSize: 16)),
                 ),
               ),
             ],
@@ -274,45 +200,25 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: TextStyle(
-        color: Colors.white.withAlpha(180),
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
+      style: GoogleFonts.dmSans(
+        fontSize: 11,
+        letterSpacing: 1.5,
+        fontWeight: FontWeight.w700,
+        color: ink.withValues(alpha: 0.4),
       ),
     );
   }
 
-  InputDecoration _inputDecoration({
-    required String hint,
-    required IconData icon,
-  }) {
+  InputDecoration _inputDecoration({required String hint}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white30),
-      prefixIcon: Icon(icon, color: const Color(0xFF818CF8), size: 20),
+      hintStyle: TextStyle(color: ink.withValues(alpha: 0.3)),
       filled: true,
-      fillColor: const Color(0xFF1A1A2E),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF2D2D44)),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF2D2D44)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFEF4444)),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
-      ),
-      errorStyle: const TextStyle(color: Color(0xFFEF4444)),
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: cream2)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: cream2)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: ink, width: 1.5)),
     );
   }
 }

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/quote_model.dart';
 import '../services/quote_service.dart';
 
-/// A card widget that displays a motivational quote.
-///
-/// Uses [FutureBuilder] to handle loading / success / error states
-/// as specified in the architecture (Phase 4 → QuoteCard section).
 class QuoteCard extends StatefulWidget {
   const QuoteCard({super.key});
 
@@ -36,20 +33,20 @@ class _QuoteCardState extends State<QuoteCard> {
       builder: (context, snapshot) {
         return Container(
           width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF1E1B4B), Color(0xFF312E81)],
+              colors: [Color(0xFFD9440F), Color(0xFFF5A623)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF6C63FF).withAlpha(40),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                color: const Color(0xFFD9440F).withValues(alpha: 0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
@@ -57,44 +54,36 @@ class _QuoteCardState extends State<QuoteCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(
-                    Icons.format_quote_rounded,
-                    color: Color(0xFF818CF8),
-                    size: 28,
+                  Text(
+                    '✦ DAILY INSPIRATION',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1,
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
                   ),
-                  const Spacer(),
-                  // Refresh button
-                  InkWell(
+                  GestureDetector(
                     onTap: _refreshQuote,
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(15),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Icon(
-                        Icons.refresh_rounded,
-                        color: Color(0xFF818CF8),
-                        size: 18,
-                      ),
+                    child: Icon(
+                      Icons.refresh_rounded,
+                      size: 14,
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               if (snapshot.connectionState == ConnectionState.waiting)
                 const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Color(0xFF818CF8),
-                      ),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
                     ),
                   ),
                 )
@@ -135,26 +124,22 @@ class _QuoteCardState extends State<QuoteCard> {
                     ),
                   ],
                 )
-              else if (snapshot.hasData) ...[
+              else ...[
                 Text(
                   '"${snapshot.data!.content}"',
-                  style: const TextStyle(
+                  style: GoogleFonts.dmSans(
+                    fontSize: 13,
                     color: Colors.white,
-                    fontSize: 14,
                     fontStyle: FontStyle.italic,
                     height: 1.5,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    '— ${snapshot.data!.author}',
-                    style: TextStyle(
-                      color: Colors.white.withAlpha(140),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Text(
+                  '— ${snapshot.data!.author}',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 10,
+                    color: Colors.white.withValues(alpha: 0.75),
                   ),
                 ),
               ],

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
 import 'widgets/auth_gate.dart';
@@ -27,7 +29,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await GoogleSignIn.instance.initialize();
+
+  // Initialize Google Sign-In — wrapped in try-catch so the app still
+  // launches even if Google Play Services is unavailable or misconfigured.
+  try {
+    await GoogleSignIn.instance.initialize(
+      clientId: kIsWeb ? '1006338958836-jivo74os1gudbkbt9c688f82sp9j56c1.apps.googleusercontent.com' : null,
+    );
+  } catch (e) {
+    debugPrint('GoogleSignIn initialization failed: $e');
+  }
+
   runApp(const TaskManagerApp());
 }
 
@@ -45,27 +57,36 @@ class TaskManagerApp extends StatelessWidget {
         title: 'Task Manager',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: const Color(0xFF0F0F23),
-          primaryColor: const Color(0xFF6C63FF),
-          colorScheme: const ColorScheme.dark(
-            primary: Color(0xFF6C63FF),
-            secondary: Color(0xFF818CF8),
-            surface: Color(0xFF1A1A2E),
-            error: Color(0xFFEF4444),
+          useMaterial3: true,
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: const Color(0xFFF7F4EF),
+          primaryColor: const Color(0xFF0F0E0D),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFFD9440F),
+            primary: const Color(0xFF0F0E0D),
+            secondary: const Color(0xFFD9440F),
+            surface: Colors.white,
+            onSurface: const Color(0xFF0F0E0D),
           ),
-          fontFamily: 'Roboto',
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFF0F0F23),
-            elevation: 0,
-          ),
-          snackBarTheme: SnackBarThemeData(
-            backgroundColor: const Color(0xFF1A1A2E),
-            contentTextStyle: const TextStyle(color: Colors.white),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+          textTheme: GoogleFonts.dmSansTextTheme().copyWith(
+            displayLarge: GoogleFonts.syne(
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF0F0E0D),
             ),
-            behavior: SnackBarBehavior.floating,
+            headlineMedium: GoogleFonts.syne(
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF0F0E0D),
+            ),
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFFF7F4EF),
+            elevation: 0,
+            iconTheme: IconThemeData(color: Color(0xFF0F0E0D)),
+            titleTextStyle: TextStyle(
+              color: Color(0xFF0F0E0D),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         home: const AuthGate(),
