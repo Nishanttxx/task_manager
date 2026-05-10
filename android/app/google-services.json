@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "1006338958836-dufhgk57d3bdtt2tpdmkd9ni304d42kt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.task_manager_app",
+            "certificate_hash": "b8ed1319ba0231c61542ed95f3ccc091bda0eb22"
+          }
+        },
+        {
           "client_id": "1006338958836-m04b7qlnme7u20rcolvfsldefm0umjek.apps.googleusercontent.com",
           "client_type": 3
         }
