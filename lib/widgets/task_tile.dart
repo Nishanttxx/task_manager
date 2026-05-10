@@ -63,12 +63,20 @@ class TaskTile extends StatelessWidget {
             decoration: task.completed ? TextDecoration.lineThrough : null,
           ),
         ),
-        subtitle: Text(
-          'Due: ${DateFormat('MMM d').format(task.date)}',
-          style: GoogleFonts.dmSans(
-            fontSize: 10,
-            color: const Color(0xFF0F0E0D).withValues(alpha: 0.4),
-          ),
+        subtitle: Row(
+          children: [
+            Text(
+              'Due: ${DateFormat('MMM d, h:mm a').format(task.date)}',
+              style: GoogleFonts.dmSans(
+                fontSize: 10,
+                color: const Color(0xFF0F0E0D).withValues(alpha: 0.4),
+              ),
+            ),
+            if (task.isAlarmEnabled) ...[
+              const SizedBox(width: 8),
+              Icon(Icons.notifications_active_outlined, size: 12, color: const Color(0xFFD9440F).withValues(alpha: 0.6)),
+            ],
+          ],
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

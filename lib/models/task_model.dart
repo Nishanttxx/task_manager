@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum RepeatOption { none, daily, weekly }
+
 /// Data model for a single task.
 ///
 /// Each task is stored in Firestore at: users/{uid}/tasks/{taskId}
-/// Fields: id, title, description, date, completed.
+/// Fields: id, title, description, date, completed, isAlarmEnabled, alarmTonePath, repeatOption.
 class TaskModel {
   final String id;
   final String title;
   final String description;
   final DateTime date;
   final bool completed;
+  final bool isAlarmEnabled;
+  final String? alarmTonePath;
+  final RepeatOption repeatOption;
 
   TaskModel({
     required this.id,
@@ -17,6 +22,9 @@ class TaskModel {
     required this.description,
     required this.date,
     this.completed = false,
+    this.isAlarmEnabled = false,
+    this.alarmTonePath,
+    this.repeatOption = RepeatOption.none,
   });
 
   /// Creates a TaskModel from a Firestore document snapshot.
@@ -27,6 +35,12 @@ class TaskModel {
       description: map['description'] as String? ?? '',
       date: (map['date'] as Timestamp?)?.toDate() ?? DateTime.now(),
       completed: map['completed'] as bool? ?? false,
+      isAlarmEnabled: map['isAlarmEnabled'] as bool? ?? false,
+      alarmTonePath: map['alarmTonePath'] as String?,
+      repeatOption: RepeatOption.values.firstWhere(
+        (e) => e.toString() == map['repeatOption'],
+        orElse: () => RepeatOption.none,
+      ),
     );
   }
 
@@ -37,6 +51,9 @@ class TaskModel {
       'description': description,
       'date': Timestamp.fromDate(date),
       'completed': completed,
+      'isAlarmEnabled': isAlarmEnabled,
+      'alarmTonePath': alarmTonePath,
+      'repeatOption': repeatOption.toString(),
     };
   }
 
@@ -47,6 +64,9 @@ class TaskModel {
     String? description,
     DateTime? date,
     bool? completed,
+    bool? isAlarmEnabled,
+    String? alarmTonePath,
+    RepeatOption? repeatOption,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -54,6 +74,9 @@ class TaskModel {
       description: description ?? this.description,
       date: date ?? this.date,
       completed: completed ?? this.completed,
+      isAlarmEnabled: isAlarmEnabled ?? this.isAlarmEnabled,
+      alarmTonePath: alarmTonePath ?? this.alarmTonePath,
+      repeatOption: repeatOption ?? this.repeatOption,
     );
   }
 }

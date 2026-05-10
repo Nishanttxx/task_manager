@@ -24,14 +24,26 @@ import 'widgets/auth_gate.dart';
 /// Security is enforced via Firebase Authentication + Firestore Security Rules,
 /// NOT by hiding API keys. This is by design — see:
 /// https://firebase.google.com/docs/projects/api-keys
+import 'package:alarm/alarm.dart';
+import 'services/notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize Google Sign-In — wrapped in try-catch so the app still
-  // launches even if Google Play Services is unavailable or misconfigured.
+  // Initialize Alarm Service (Native only)
+  if (!kIsWeb) {
+    await Alarm.init();
+  }
+
+  // Initialize Notification Service
+  final notificationService = NotificationService();
+  await notificationService.init();
+  await notificationService.requestPermissions();
+
+  // Initialize Google Sign-In
   try {
     await GoogleSignIn.instance.initialize(
       clientId: kIsWeb ? '1006338958836-jivo74os1gudbkbt9c688f82sp9j56c1.apps.googleusercontent.com' : null,
