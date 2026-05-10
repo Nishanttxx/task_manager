@@ -1,88 +1,159 @@
-# 🚀 TaskFlow
+🚀 TaskFlow
 
-[![Flutter Build & Release](https://github.com/Nishanttxx/task_manager/actions/workflows/release.yml/badge.svg)](https://github.com/Nishanttxx/task_manager/actions/workflows/release.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+Flutter Build & Release • License: MIT
 
-**TaskFlow** is a premium, high-performance task management application built with Flutter and Firebase. It combines sleek glassmorphic design with robust functionality to help you stay productive and motivated.
+TaskFlow is a premium, high-performance task management application built with Flutter and Firebase. It combines sleek glassmorphic design with robust functionality to help users stay productive and motivated.
 
----
+✨ Features
+🌈 Modern Aesthetics
+Beautiful UI with vibrant gradients, glassmorphism, smooth transitions, and micro-animations.
+🔐 Secure Authentication
+Supports Google Sign-In and Anonymous Authentication using Firebase Auth.
+☁️ Real-time Sync
+Instant task synchronization using Cloud Firestore.
+💡 Daily Motivation
+Fetches motivational quotes from external REST APIs.
+🔔 Task Alarm System
+Smart reminder popup with looping alarm tones and snooze support.
+🚀 CI/CD Powered
+Automated Android build and release pipeline using GitHub Actions.
+🛠️ Tech Stack
+Technology	Usage
+Flutter (Dart)	Frontend Framework
+Firebase Auth	Authentication
+Cloud Firestore	Database
+Provider	State Management
+Flutter Animate	Animations
+GitHub Actions	CI/CD Pipeline
+📸 Preview
 
-## ✨ Features
+TaskFlow Icon
 
-- **🌈 Modern Aesthetics**: A stunning UI featuring vibrant gradients, glassmorphism, and smooth micro-animations.
-- **🔐 Secure Authentication**: Multi-method login support including Google Sign-In and Anonymous access via Firebase Auth.
-- **☁️ Real-time Sync**: Instant data persistence across devices using Cloud Firestore.
-- **💡 Daily Motivation**: Integrated motivational quote system powered by external REST APIs.
-- **🚀 CI/CD Powered**: Automated build and release pipeline via GitHub Actions for seamless Android deployments.
+Building a more productive tomorrow, one task at a time.
 
----
+🚀 Getting Started
+Prerequisites
 
-## 🛠️ Tech Stack
+Before starting, make sure you have:
 
-- **Framework**: [Flutter](https://flutter.dev) (Dart)
-- **Backend**: [Firebase](https://firebase.google.com) (Auth, Firestore)
-- **State Management**: [Provider](https://pub.dev/packages/provider)
-- **Animations**: [Flutter Animate](https://pub.dev/packages/flutter_animate)
-- **CI/CD**: GitHub Actions
+Latest stable version of Flutter SDK
+Android Studio or VS Code
+Firebase Project
+Git installed
+Android Emulator or Physical Device
+📦 Installation & Setup
+1. Clone the Repository
+git clone https://github.com/Nishanttxx/task_manager.git
+cd task_manager
+2. Install Dependencies
+flutter pub get
+🔥 Firebase Setup
+3. Create Firebase Project
+Open Firebase Console
+Create a new Firebase project
+Enable:
+Authentication
+Cloud Firestore
+4. Enable Authentication Methods
 
----
+Inside Firebase Console:
 
-## 📸 Preview
+Enable Google Sign-In
+Go to:
+Authentication → Sign-in Method
+Enable:
+Google
+Anonymous Authentication
+5. Add Android App to Firebase
+Register Android package name
+Download google-services.json
+Place it inside:
+android/app/google-services.json
+6. Install FlutterFire CLI
+dart pub global activate flutterfire_cli
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/Nishanttxx/task_manager/main/assets/icon/icon.png" width="150" alt="TaskFlow Icon" />
-  <p><i>Building a more productive tomorrow, one task at a time.</i></p>
-</div>
+Verify installation:
 
----
+flutterfire --version
+7. Configure Firebase for Flutter
 
-## 🚀 Getting Started
+Run:
 
-### Prerequisites
+flutterfire configure
 
-- Flutter SDK (latest stable version)
-- Android Studio / VS Code
-- A Firebase Project
+This generates:
 
-### Installation
+lib/firebase_options.dart
+▶️ Run the App
+Start Emulator or Connect Device
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Nishanttxx/task_manager.git
-   cd task_manager
-   ```
+Check connected devices:
 
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
+flutter devices
+Run Application
+flutter run
+🏗️ Build APK
+Debug APK
+flutter build apk --debug
+Release APK
+flutter build apk --release
 
-3. **Configure Firebase**
-   Ensure you have your `firebase_options.dart` generated or configured in `lib/`.
+Generated APK location:
 
-4. **Run the app**
-   ```bash
-   flutter run
-   ```
+build/app/outputs/flutter-apk/
+🔑 GitHub Actions CI/CD Setup
 
----
+TaskFlow includes automated Android build workflows using GitHub Actions.
 
-## 🏗️ CI/CD Pipeline
+Required GitHub Secrets
 
-TaskFlow uses an automated GitHub Actions pipeline to ensure code quality and deployment readiness:
+Go to:
 
-- **Build**: Automatically compiles a signed APK on every push to `main`.
-- **Secrets**: Uses encrypted GitHub Secrets for Keystores and API keys.
-- **Security**: Integrated CodeQL analysis for automated vulnerability scanning.
+GitHub Repository → Settings → Secrets and Variables → Actions
 
----
+Add:
 
-## 📄 License
+Secret Name	Description
+KEYSTORE_BASE64	Base64 encoded keystore
+KEYSTORE_PASSWORD	Keystore password
+KEY_ALIAS	Key alias
+KEY_PASSWORD	Key password
+FIREBASE_API_KEY	Firebase API Key
+CI/CD Features
+✅ Automatic APK build on push
+✅ Release workflow automation
+✅ Secure encrypted secrets
+✅ CodeQL vulnerability scanning
+✅ Continuous integration checks
+📁 Project Structure
+lib/
+ ├── models/
+ ├── providers/
+ ├── screens/
+ ├── services/
+ ├── widgets/
+ ├── firebase_options.dart
+ └── main.dart
+🔔 Alarm Feature
 
-Distributed under the MIT License. See `LICENSE` for more information.
+TaskFlow includes a smart task reminder system:
 
----
+Full-screen alarm popup
+Custom alarm tone support
+Snooze functionality
+Persistent reminders
+Local storage integration
+🧪 Useful Commands
+Clean Project
+flutter clean
+Get Dependencies Again
+flutter pub get
+Analyze Code
+flutter analyze
+Run Tests
+flutter test
+📄 License
 
-<div align="center">
-  Made with ❤️ by Nishant
-</div>
+Distributed under the MIT License.
+
+See LICENSE for more information.
