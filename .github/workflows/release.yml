@@ -41,6 +41,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: aider-chat-action
+        uses: mirrajabi/aider-github-action@v1.1.0
+
       - name: Build APK
         run: flutter build apk --release
 
