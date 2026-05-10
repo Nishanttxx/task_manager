@@ -102,6 +102,7 @@ jobs:
       shell: bash
       run: |
         cd android
+        chmod +x gradlew
         ./gradlew assembleDebug
 
     - name: Perform CodeQL Analysis
