@@ -14,7 +14,7 @@ class QuoteModel {
   /// Creates a QuoteModel from the API's JSON response.
   factory QuoteModel.fromJson(Map<String, dynamic> json) {
     return QuoteModel(
-      content: json['content'] as String? ?? 'Stay motivated!',
+      content: (json['quote'] ?? json['content']) as String? ?? 'Stay motivated!',
       author: json['author'] as String? ?? 'Unknown',
     );
   }

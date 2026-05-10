@@ -7,7 +7,6 @@ import 'package:alarm/model/alarm_settings.dart';
 import 'package:alarm/model/volume_settings.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'notification_service.dart';
 import '../models/task_model.dart';
 import 'dart:io' as io;
 
@@ -17,7 +16,6 @@ class AlarmService {
   AlarmService._internal();
 
   final AudioPlayer _audioPlayer = AudioPlayer();
-  final NotificationService _notificationService = NotificationService();
 
   /// Picks an audio file from the device storage.
   Future<String?> pickAlarmTone() async {
@@ -87,9 +85,17 @@ class AlarmService {
 
     // If alarm is enabled and task is not completed, schedule it
     if (task.isAlarmEnabled && !task.completed && task.date.isAfter(DateTime.now())) {
+      
+      // Request notification permission on Android 13+
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+        if (!await Permission.notification.isGranted) {
+          await Permission.notification.request();
+        }
+      }
+
       final alarmSettings = AlarmSettings(
         id: alarmId,
-        dateTime: task.date,
+        dateTime: task.date, // Set to trigger exactly at the due time
         assetAudioPath: task.alarmTonePath,
         loopAudio: true,
         vibrate: true,
@@ -99,10 +105,10 @@ class AlarmService {
           volumeEnforced: true,
         ),
         notificationSettings: NotificationSettings(
-          title: 'Task Pending: ${task.title}',
-          body: 'Complete your task now: ${task.description}',
+          title: 'Task Due: ${task.title}',
+          body: 'Your task is due: ${task.description}',
           stopButton: 'Stop Alarm',
-          icon: 'notification_icon',
+          icon: 'launcher_icon', // Uses the existing mipmap/launcher_icon
         ),
       );
 

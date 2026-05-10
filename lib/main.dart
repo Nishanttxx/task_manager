@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
 import 'widgets/auth_gate.dart';
+import 'widgets/alarm_observer.dart';
 
 /// Task Manager App — Entry Point
 ///
@@ -25,7 +26,6 @@ import 'widgets/auth_gate.dart';
 /// NOT by hiding API keys. This is by design — see:
 /// https://firebase.google.com/docs/projects/api-keys
 import 'package:alarm/alarm.dart';
-import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,11 +37,6 @@ void main() async {
   if (!kIsWeb) {
     await Alarm.init();
   }
-
-  // Initialize Notification Service
-  final notificationService = NotificationService();
-  await notificationService.init();
-  await notificationService.requestPermissions();
 
   // Initialize Google Sign-In
   try {
@@ -100,8 +95,19 @@ class TaskManagerApp extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          timePickerTheme: TimePickerThemeData(
+            hourMinuteTextStyle: GoogleFonts.dmSans(
+              fontSize: 48,
+              fontWeight: FontWeight.w700,
+            ),
+            dialHandColor: const Color(0xFFD9440F),
+            dialTextStyle: GoogleFonts.dmSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
-        home: const AuthGate(),
+        home: const AlarmObserver(child: AuthGate()),
       ),
     );
   }

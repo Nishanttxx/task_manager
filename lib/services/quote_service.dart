@@ -7,7 +7,7 @@ import '../models/quote_model.dart';
 /// This service has NO dependency on Firebase — it is a standalone
 /// modular integration, as shown in Phase 3 of the architecture.
 class QuoteService {
-  static const String _baseUrl = 'https://api.quotable.io/random';
+  static const String _baseUrl = 'https://dummyjson.com/quotes/random';
 
   /// Fetches a single random motivational quote.
   ///
