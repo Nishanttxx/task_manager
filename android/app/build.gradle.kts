@@ -35,10 +35,10 @@ android {
     signingConfigs {
         create("release") {
             if (hasKeyProperties) {
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-                storePassword = keystoreProperties["storePassword"] as String
+                keystoreProperties.getProperty("keyAlias")?.let { keyAlias = it }
+                keystoreProperties.getProperty("keyPassword")?.let { keyPassword = it }
+                keystoreProperties.getProperty("storeFile")?.let { storeFile = file(it) }
+                keystoreProperties.getProperty("storePassword")?.let { storePassword = it }
             }
         }
     }
